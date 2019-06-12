@@ -82,6 +82,11 @@ public class AdministratorController {
 			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
 			return toInsert();
 		}
+		System.out.println(form);
+		if(!form.getPassword().equals(form.getPasswordForCheck())) {
+			result.rejectValue("passwordForCheck", null, "パスワードが一致しません");
+			return toInsert();
+		}
 		
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
