@@ -82,7 +82,6 @@ public class AdministratorController {
 			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
 			return toInsert();
 		}
-		System.out.println(form);
 		if(!form.getPassword().equals(form.getPasswordForCheck())) {
 			result.rejectValue("passwordForCheck", null, "パスワードが一致しません");
 			return toInsert();
@@ -124,6 +123,8 @@ public class AdministratorController {
 			result.addError(new ObjectError("loginError", "メールアドレスまたはパスワードが不正です。"));
 			return toLogin();
 		}
+		session.setAttribute("administrator", administrator);
+		
 		return "forward:/employee/showList";
 	}
 	
