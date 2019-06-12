@@ -74,18 +74,17 @@ public class AdministratorController {
 			@Validated InsertAdministratorForm form,
 			BindingResult result) {
 		
+		if(administratorService.mailCheck(form.getMailAddress()) != null) {
+			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
+		}
+		if(!form.getPassword().equals(form.getPasswordForCheck())) {
+			result.rejectValue("passwordForCheck", null, "パスワードが一致しません");
+		}
+		
 		if(result.hasErrors()) {
 			return toInsert();
 		}
 		
-		if(administratorService.mailCheck(form.getMailAddress()) != null) {
-			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
-			return toInsert();
-		}
-		if(!form.getPassword().equals(form.getPasswordForCheck())) {
-			result.rejectValue("passwordForCheck", null, "パスワードが一致しません");
-			return toInsert();
-		}
 		
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
@@ -123,7 +122,7 @@ public class AdministratorController {
 			result.addError(new ObjectError("loginError", "メールアドレスまたはパスワードが不正です。"));
 			return toLogin();
 		}
-		session.setAttribute("administrator", administrator);
+		session.setAttribute("administratorName", administrator.getName());
 		
 		return "forward:/employee/showList";
 	}
