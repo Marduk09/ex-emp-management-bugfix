@@ -78,6 +78,11 @@ public class AdministratorController {
 			return toInsert();
 		}
 		
+		if(administratorService.mailCheck(form.getMailAddress()) != null) {
+			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
+			return toInsert();
+		}
+		
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
 		BeanUtils.copyProperties(form, administrator);
