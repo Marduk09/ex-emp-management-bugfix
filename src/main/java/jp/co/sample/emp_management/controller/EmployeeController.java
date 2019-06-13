@@ -68,9 +68,13 @@ public class EmployeeController {
 	 * @param model モデル
 	 * @return 従業員一覧画面
 	 */
-	@RequestMapping("/showResult")
-	public String showResult(SearchEmployeeForm form, Model model) {
+	@RequestMapping("/searchByName")
+	public String searchByName(SearchEmployeeForm form, Model model) {
 		List<Employee> employeeList = employeeService.showResultByName(form.getName());
+		if(employeeList.size() == 0) {
+			employeeList = employeeService.showList();
+			model.addAttribute("noResult", true);
+		}
 		model.addAttribute("employeeList", employeeList);
 		return "employee/list";
 	}

@@ -66,14 +66,20 @@
 
 				<!-- 従業員名検索フォーム -->
 				<div class="col-sm-10">
-					<form th:action = "@{/employee/showResult}" method="post" th:object="${searchEmployeeForm}" class="form-inline"”>
+					<form th:action = "@{/employee/searchByName}" method="post" th:object="${searchEmployeeForm}" class="form-inline"”>
 						<div class="form-group">
 							<label for = "searchName">従業員検索:</label>
 							<input type = "text" name = "name" id = "searchName"th:field="*{name}" placeholder="名前を入力してください" class="form-control">
 						</div>
 						<input type = "submit" value= "検索" class="btn btn-default">
 					</form>
+				<br>
+				<div th:if="${noResult}"> 
+					<h4 class="text-center">
+						<strong><span th:text="${searchEmployeeForm.name}">山田太郎</span></strong>を名前に含む従業員は見つかりませんでした。
+					</h4>
 				</div>
+				<br>
 				
 				<table class="table table-striped">
 					<thead>
