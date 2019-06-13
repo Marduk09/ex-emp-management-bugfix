@@ -1,6 +1,9 @@
 package jp.co.sample.emp_management.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +31,9 @@ public class EmployeeController {
 	@Autowired
 	private EmployeeService employeeService;
 	
+	@Autowired
+	private HttpSession session;
+	
 	/**
 	 * 使用するフォームオブジェクトをリクエストスコープに格納する.
 	 * 
@@ -54,7 +60,13 @@ public class EmployeeController {
 	@RequestMapping("/showList")
 	public String showList(Model model) {
 		List<Employee> employeeList = employeeService.showList();
+		List<String> employeeNameList = employeeList.stream()
+				.map(employee -> employee.getName())
+				.collect(Collectors.toList());
+		System.out.println(employeeNameList);
 		model.addAttribute("employeeList", employeeList);
+		session.setAttribute("employeeNameList", employeeNameList);
+		
 		return "employee/list";
 	}
 	
