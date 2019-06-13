@@ -33,6 +33,17 @@ public class EmployeeService {
 	}
 	
 	/**
+	 * 渡された文字列を含む名前の従業員情報を入社日順で取得.
+	 * 
+	 * @param name 検索する文字列
+	 * @return 従業員情報 従業員が存在しない場合はサイズ0件の従業員一覧を返す
+	 */
+	public List<Employee> showResultByName(String name){
+		List<Employee> employeeList = employeeRepository.findByName(name);
+		return employeeList;
+	}
+	
+	/**
 	 * 従業員情報を取得します.
 	 * 
 	 * @param id ID

@@ -40,7 +40,7 @@
 						<li class="active"><a href="list.html" th:href="@{/employee/showList}">従業員管理</a></li>
 					</ul>
 					<p class="navbar-text navbar-right">
-						<span th:text="${session.administrator.name}">山田太郎</span>さんこんにちは！
+						<span th:text="${session.administratorName}">山田太郎</span>さんこんにちは！
 						&nbsp;&nbsp;&nbsp;
 						<a href="../administrator/login.html" class="navbar-link" th:href="@{/logout}">ログアウト</a>
 					</p>
@@ -64,6 +64,17 @@
 
 <!-- ここにモックのtable要素を貼り付けます -->
 
+				<!-- 従業員名検索フォーム -->
+				<div class="col-sm-8">
+					<form th:action = "@{/employee/showResult}" method="post" th:object="${searchEmployeeForm}" class="form-inline"”>
+						<div class="form-group">
+							<label for = "searchName">従業員検索:</label>
+							<input type = "text" name = "name" id = "searchName"th:field="*{name}" class="form-control">
+						</div>
+						<input type = "submit" value= "検索" class="btn btn-default">
+					</form>
+				</div>
+				
 				<table class="table table-striped">
 					<thead>
 						<tr>
