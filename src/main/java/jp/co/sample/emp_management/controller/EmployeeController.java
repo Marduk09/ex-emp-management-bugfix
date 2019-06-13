@@ -63,7 +63,6 @@ public class EmployeeController {
 		List<String> employeeNameList = employeeList.stream()
 				.map(employee -> employee.getName())
 				.collect(Collectors.toList());
-		System.out.println(employeeNameList);
 		model.addAttribute("employeeList", employeeList);
 		session.setAttribute("employeeNameList", employeeNameList);
 		
