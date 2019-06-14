@@ -1,10 +1,15 @@
 package jp.co.sample.emp_management.controller;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +19,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jp.co.sample.emp_management.domain.Employee;
+import jp.co.sample.emp_management.form.InsertEmployeeForm;
 import jp.co.sample.emp_management.form.SearchEmployeeForm;
 import jp.co.sample.emp_management.form.UpdateEmployeeForm;
 import jp.co.sample.emp_management.service.EmployeeService;
@@ -46,6 +52,10 @@ public class EmployeeController {
 	@ModelAttribute
 	public SearchEmployeeForm setUpSearchForm() {
 		return new SearchEmployeeForm();
+	}
+	@ModelAttribute
+	public InsertEmployeeForm InsertEmployeeForm() {
+		return new InsertEmployeeForm();
 	}
 
 	/////////////////////////////////////////////////////
@@ -129,4 +139,70 @@ public class EmployeeController {
 		employeeService.update(employee);
 		return "redirect:/employee/showList";
 	}
+	
+	/**
+	 * 従業員登録画面を出力.
+	 * 
+	 * @param model モデル
+	 * @return 従業員登録画面
+	 */
+	@RequestMapping("/toInsert")
+	public String toInsert(Model model) {
+		return "employee/insert";
+	}
+	
+	/**
+	 * 従業員情報を登録.
+	 * 
+	 * @param form 従業員登録フォーム
+	 * @param result エラーチェック用リザルト
+	 * @param model モデル
+	 * @return 従業員一覧画面
+	 */
+	@RequestMapping("/insertEmployee")
+	public String insertEmployee(@Validated InsertEmployeeForm form ,BindingResult result, Model model) {
+		System.out.println(form);
+		
+		if(employeeService.mailCheck(form.getMailAddress()) != null) {
+			result.rejectValue("mailAddress", null, "このメールアドレスはすでに登録されています。");
+		}
+		
+		if(result.hasErrors()) {
+			return "employee/insert";
+		}
+		
+		int id = employeeService.getMaxId() + 1;
+		String image = "";
+		
+		try {
+			if(!form.getImageFile().isEmpty()) {
+				image = "emp_" + id + ".png";
+				File uploadFile = new File("src/main/resources/static/img/" + image);
+				byte[] bytes = form.getImageFile().getBytes();
+				BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(uploadFile));
+				output.write(bytes);
+				output.close();
+			}else {
+				image = "default.png";
+			}
+		} catch (Exception e) {
+			System.out.println("画像がアップロードできませんでした。");
+			System.err.println(e);
+		}
+		
+		Employee employee = new Employee();
+		BeanUtils.copyProperties(form, employee);
+		System.out.println(employee);
+		employee.setId(id);
+		employee.setImage(image);
+		employee.setHireDate(Date.valueOf(form.getHireDate()));
+		employee.setSalary(Integer.parseInt(form.getSalary()));
+		employee.setDependentsCount(Integer.parseInt(form.getDependentsCount()));
+		
+		employeeService.insert(employee);
+		System.out.println(employee);
+		
+		return "redirect:/employee/showList";
+	}
+	
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import jp.co.sample.emp_management.domain.Administrator;
 import jp.co.sample.emp_management.domain.Employee;
 import jp.co.sample.emp_management.repository.EmployeeRepository;
 
@@ -62,5 +63,34 @@ public class EmployeeService {
 	 */
 	public void update(Employee employee) {
 		employeeRepository.update(employee);
+	}
+	
+	/**
+	 * 従業員情報を登録します.
+	 * 
+	 * @param employee 登録する従業員情報
+	 */
+	public void insert(Employee employee) {
+		employeeRepository.insert(employee);
+	}
+	
+	/**
+	 * 従業員IDの最大値を求める.
+	 * 
+	 * @return IDの最大値
+	 */
+	public Integer getMaxId() {
+		return employeeRepository.getMaxId();
+	}
+	
+	/**
+	 * メールアドレスが重複していないかチェック.
+	 * 
+	 * @param mailAdress メールアドレス
+	 * @return 従業員情報 存在しない場合はnullを返す
+	 */
+	public Employee mailCheck(String mailAddress) {
+		Employee employee = employeeRepository.findByMailAddress(mailAddress);
+		return employee;
 	}
 }
