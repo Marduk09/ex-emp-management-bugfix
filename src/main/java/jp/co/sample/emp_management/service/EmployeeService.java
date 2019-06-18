@@ -1,10 +1,14 @@
 package jp.co.sample.emp_management.service;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import jp.co.sample.emp_management.domain.Administrator;
 import jp.co.sample.emp_management.domain.Employee;
@@ -70,7 +74,32 @@ public class EmployeeService {
 	 * 
 	 * @param employee 登録する従業員情報
 	 */
-	public void insert(Employee employee) {
+	synchronized public void insert(Employee employee, MultipartFile imageFile) {
+		
+		int id = employeeRepository.getMaxId() + 1;
+		String image = "";
+		System.out.println(imageFile.getOriginalFilename());
+		
+		try {
+			if(!imageFile.isEmpty()) {
+				image = "emp_" + id + ".png";
+				File uploadFile = new File("src/main/resources/static/img/" + image);
+				byte[] bytes = imageFile.getBytes();
+				BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(uploadFile));
+				output.write(bytes);
+				output.close();
+			}else {
+				image = "default.png";
+			}
+		} catch (Exception e) {
+			System.out.println("画像がアップロードできませんでした。");
+			System.err.println(e);
+		}
+		
+		employee.setId(id);
+		employee.setImage(image);
+		
+		System.out.println(employee);
 		employeeRepository.insert(employee);
 	}
 	

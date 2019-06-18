@@ -17,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.multipart.MultipartFile;
 
 import jp.co.sample.emp_management.domain.Employee;
 import jp.co.sample.emp_management.form.InsertEmployeeForm;
@@ -171,35 +172,17 @@ public class EmployeeController {
 			return "employee/insert";
 		}
 		
-		int id = employeeService.getMaxId() + 1;
-		String image = "";
-		
-		try {
-			if(!form.getImageFile().isEmpty()) {
-				image = "emp_" + id + ".png";
-				File uploadFile = new File("src/main/resources/static/img/" + image);
-				byte[] bytes = form.getImageFile().getBytes();
-				BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(uploadFile));
-				output.write(bytes);
-				output.close();
-			}else {
-				image = "default.png";
-			}
-		} catch (Exception e) {
-			System.out.println("画像がアップロードできませんでした。");
-			System.err.println(e);
-		}
-		
 		Employee employee = new Employee();
 		BeanUtils.copyProperties(form, employee);
 		System.out.println(employee);
-		employee.setId(id);
-		employee.setImage(image);
 		employee.setHireDate(Date.valueOf(form.getHireDate()));
 		employee.setSalary(Integer.parseInt(form.getSalary()));
 		employee.setDependentsCount(Integer.parseInt(form.getDependentsCount()));
 		
-		employeeService.insert(employee);
+		MultipartFile imageFile = form.getImageFile();
+		System.out.println(imageFile.getOriginalFilename());
+		
+		employeeService.insert(employee, imageFile);
 		System.out.println(employee);
 		
 		return "redirect:/employee/showList";
